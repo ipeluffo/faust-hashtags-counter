@@ -12,7 +12,7 @@ In this part, we're just printing on console the tweets content and hash tags. I
 
 ### Requirements
 * Python 3.6+
-* Twitter developer account
+* Twitter developer account: https://developer.twitter.com/en.html
 
 ### Setup Twitter secrets
 1. Make copy of `.env.example` file and rename it as `.env`
