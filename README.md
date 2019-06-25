@@ -1,17 +1,27 @@
-# Faust hashtags counter
-Sample Faust project to process tweets in real-time
+# Hashtags counter with Faust
+Sample Faust project to process tweets in real-time and count hashtags.
 
-## Part 1
-In this part, we'll create a [custom faust CLI command](https://faust.readthedocs.io/en/latest/userguide/tasks.html#cli-commands) to process a stream of tweets using a specific hash-tag.
+## What are we building?
 
-What we're doing:
-* Writing a Faust custom CLI command
-* Integrating [tweepy](https://www.tweepy.org) to process Twitter stream
+### 1. Custom Faust CLI command
+A [custom faust CLI command](https://faust.readthedocs.io/en/latest/userguide/tasks.html#cli-commands) is responsible for filtering a stream of tweets using a list of hashtags in CSV format.
 
-In this part, we're just printing on console the tweets content and hash tags. In the next section we'll send tweets to a Kafka topic to be processed by Faust workers.
+For this, the command is integrated with [peony-twitter](https://github.com/odrling/peony-twitter) to process the [Twitter stream](https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html).
 
-### Requirements
+Finally, the command will create one event for each hashtag found in tweets returned by the Twitter stream.
+
+### 2. Faust agent to process events
+The agent will process all events and store the hashtags counters in a [tumbling window table](https://faust.readthedocs.io/en/latest/userguide/tables.html#TumblingWindow).
+
+### 3. Faust view
+This project will expose a few Faust views:
+1. Get hashtag count
+2. Get hashtag [state for current window](https://faust.readthedocs.io/en/latest/userguide/tables.html#how-to)
+3. Get all hashtags (expensive view)
+
+## Requirements
 * Python 3.6+
+* `pipenv`: https://docs.pipenv.org/en/latest/
 * Twitter developer account: https://developer.twitter.com/en.html
 
 ### Setup Twitter secrets
@@ -24,40 +34,57 @@ pip install -U pipenv
 pipenv sync 
 ```
 
-To use dependencies for development:
+To install dependencies for development:
 ```bash
 pipenv sync --dev
 ```
 
-### How to run the custom command?
+## How to run the project
+### Set all environment variables
+Check all env vars defined in the `.env` file and set the corresponding values.
+
+__Note__:
+* Kafka connection string is the list of brokers with the port separated by semicolon.
+
+### Have a Kafka instance running
+You can use your own cluster or use one of the docker compose file provided in the `docker` folder.
+
+#### Running using Docker Compose
+From `docker` folder:
+```bash
+docker-compose up
+```
+
+This will run both Zookeeper and Kafka using the default ports `2181` and `9092`.
+
+If you want to store the data, from `docker` folder, run:
+```bash
+docker-compose -f docker-compose-with-storage.yml up
+```
+
+#### Stopping containers
+Just stop containers running pressing `CTRL+C`, or from another window run:
+```bash
+docker-compose stop
+```
+
+### Run CLI command
 From project's folder:
 ```bash
-pipenv run faust -A commands.commands -l info tweets_generator --hash-tag your_hashtag
+pipenv run faust -A commands.commands -l info hashtags_events_generator --hashtags hashtag1,hashtag2
 ```
 
-### Get command help
+#### Get command help
 ```bash
-pipenv run faust -A commands.commands -l info tweets_generator --help
+pipenv run faust -A commands.commands -l info hashtags_events_generator --help
 ```
 
-### Output example:
+### Run Faust worker
+In a different terminal:
+```bash
+pipenv run faust -A src.app worker -l info
 ```
-➜ pipenv run faust -A commands.commands -l info tweets_generator --hash-tag python
-Loading .env environment variables…
-[2019-06-22 18:30:35,440: INFO]: [^Worker]: Starting...
-[2019-06-22 18:30:35,441: INFO]: Searching tweets with hash tag: #python
-[2019-06-22 18:30:35,445: INFO]: [^Worker]: Stopping...
-[2019-06-22 18:30:35,446: INFO]: [^Worker]: Gathering service tasks...
-[2019-06-22 18:30:35,446: INFO]: [^Worker]: Gathering all futures...
-[2019-06-22 18:30:36,449: INFO]: [^Worker]: Closing event loop
-[2019-06-22 18:30:40,786: INFO]: RT @FullstackDevJS: An easy approach to contribute to Open Source Project #Fullstack #Javascript #Angular #React #Python https://t.co/hKQpS…
-[2019-06-22 18:30:40,786: INFO]: ['Fullstack', 'Javascript', 'Angular', 'React', 'Python']
-[2019-06-22 18:30:46,279: INFO]: 2019-06-22 18:30:03
--Download (Mb/s): 5.62
--Upload (Mb/s): 10.80
--Ping (ms): 56.58
 
-I pay for 55Mb/s down with broadband. The threshold for this tweet was 15Mb/s.
-#Python #RaspberryPi #SpeedTest
-[2019-06-22 18:30:46,279: INFO]: ['Python', 'RaspberryPi', 'SpeedTest']
-```
+__Important__:
+1. This will expose the views on the default port `6066`
+2. The worker will store data in the default folder
