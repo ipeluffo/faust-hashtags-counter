@@ -32,7 +32,7 @@ pipenv sync --dev
 ### How to run the custom command?
 From project's folder:
 ```bash
-pipenv run faust -A commands.commands -l info tweets_generator --hash-tag your_hash_tag
+pipenv run faust -A commands.commands -l info tweets_generator --hash-tag your_hashtag
 ```
 
 ### Get command help

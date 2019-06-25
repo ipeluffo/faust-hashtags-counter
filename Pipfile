@@ -9,7 +9,7 @@ ipdb = "*"
 
 [packages]
 faust = "*"
-tweepy = "*"
+peony-twitter = "*"
 
 [requires]
 python_version = "3.7"
