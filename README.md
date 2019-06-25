@@ -1,4 +1,4 @@
-# Faust tweets counter
+# Faust hashtags counter
 Sample Faust project to process tweets in real-time
 
 ## Part 1
