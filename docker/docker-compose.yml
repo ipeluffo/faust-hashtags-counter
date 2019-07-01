@@ -1,14 +1,12 @@
 version: '3'
 services:
   zookeeper:
-    container_name: faust_segmentation_zookeeper
     image: 'bitnami/zookeeper:latest'
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
-    container_name: faust_segmentation_kafka
     image: 'bitnami/kafka:latest'
     ports:
       - '9092:9092'

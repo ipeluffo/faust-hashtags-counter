@@ -4,7 +4,9 @@ Sample Faust project to process tweets in real-time and count hashtags.
 ## What are we building?
 
 ### 1. Custom Faust CLI command
-A [custom faust CLI command](https://faust.readthedocs.io/en/latest/userguide/tasks.html#cli-commands) is responsible for filtering a stream of tweets using a list of hashtags in CSV format.
+A [custom faust CLI command](https://faust.readthedocs.io/en/latest/userguide/tasks.html#cli-commands) is responsible for filtering a stream of tweets using a list of words in CSV format.
+
+More information about Twitter API `track` filter: [https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters.html](https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters.html).
 
 For this, the command is integrated with [peony-twitter](https://github.com/odrling/peony-twitter) to process the [Twitter stream](https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter.html).
 

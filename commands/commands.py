@@ -12,19 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 @app.command(
-    option("--hashtags", type=str, help="CSV list of hashtags filter stream of tweets", required=True)
+    option("--track", type=str, help="List of words in CSV format to filter stream of tweets", required=True)
 )
-async def hashtags_events_generator(self, hashtags: str):
+async def hashtags_events_generator(self, track: str):
     """
-    Generate Kafka events for each hashtag found in tweets matching with the hashtags
-    used to filter the stream.
+    Generate Kafka events for each hashtag found in tweets matching with the track used to filter the stream.
     """
-    hashtags = _clean_hashtag(hashtags=hashtags)
-
-    logger.info(f"Searching tweets with hashtags: {hashtags}")
+    logger.info(f"Searching tweets with hashtags: {track}")
 
     client = _get_twitter_client()
-    req = client.stream.statuses.filter.post(track=hashtags)
+    req = client.stream.statuses.filter.post(track=track)
 
     async with req as stream:
         async for tweet in stream:
@@ -33,18 +30,6 @@ async def hashtags_events_generator(self, hashtags: str):
                 for tweet_hashtag in tweet_hashtags:
                     logger.info(f'Sending event for hashtag: {tweet_hashtag["text"].lower()}')
                     await hashtags_topic.send(value=tweet_hashtag["text"].lower())
-
-
-def _clean_hashtag(hashtags: str) -> Optional[str]:
-    if not hashtags or len(hashtags.strip()) < 1:
-        return None
-
-    return ','.join(
-        [
-            hashtag.strip().lower() if hashtag[0] == '#' else f'#{hashtag.strip().lower()}'
-            for hashtag in hashtags.split(',')
-        ]
-    )
 
 
 def _get_twitter_client() -> PeonyClient:
