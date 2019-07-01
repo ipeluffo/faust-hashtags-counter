@@ -15,11 +15,10 @@ Finally, the command will create one event for each hashtag found in tweets retu
 ### 2. Faust agent to process events
 The agent will process all events and store the hashtags counters in a [tumbling window table](https://faust.readthedocs.io/en/latest/userguide/tables.html#TumblingWindow).
 
-### 3. Faust view
+### 3. Faust views
 This project will expose a few Faust views:
-1. Get hashtag count
-2. Get hashtag [state for current window](https://faust.readthedocs.io/en/latest/userguide/tables.html#how-to)
-3. Get all hashtags (expensive view)
+1. Get all hashtags
+2. Get hashtag count
 
 ## Requirements
 * Python 3.6+
@@ -73,7 +72,7 @@ docker-compose stop
 ### Run CLI command
 From project's folder:
 ```bash
-pipenv run faust -A commands.commands -l info hashtags_events_generator --hashtags hashtag1,hashtag2
+pipenv run faust -A commands.commands -l info hashtags_events_generator --track word1,hashtag1,word2
 ```
 
 #### Get command help
@@ -90,3 +89,10 @@ pipenv run faust -A src.app worker -l info
 __Important__:
 1. This will expose the views on the default port `6066`
 2. The worker will store data in the default folder
+
+### Views
+#### List of hashtags
+This view is exposed at: [`http://localhost:6066/hashtags`](http://localhost:6066/hashtags)
+
+#### Hashtag's count
+This view is exposed at: [`http://localhost:6066/{hashtag}/count`](http://localhost:6066/{hashtag}/count)
