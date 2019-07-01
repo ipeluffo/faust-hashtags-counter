@@ -1,0 +1,8 @@
+import os
+
+CONSUMER_KEY = os.getenv("CONSUMER_KEY", None)
+CONSUMER_SECRET = os.getenv("CONSUMER_SECRET", None)
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN", None)
+ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET", None)
+
+BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS')
