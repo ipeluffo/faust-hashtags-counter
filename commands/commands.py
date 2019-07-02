@@ -16,7 +16,7 @@ async def hashtags_events_generator(self, track: str):
     """
     Generate Kafka events for each hashtag found in tweets matching with the track used to filter the stream.
     """
-    logger.info(f"Searching tweets with hashtags: {track}")
+    logger.info(f"Searching tweets with track: {track}")
 
     client = _get_twitter_client()
     req = client.stream.statuses.filter.post(track=track)
